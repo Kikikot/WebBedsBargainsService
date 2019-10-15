@@ -40,6 +40,10 @@ namespace WebBedsBargainsService.Service
             var configuredMilliseconds = config.Get("BS:WaitingMilliseconds");
             if (Int32.TryParse(configuredMilliseconds, out int milliseconds) && milliseconds > MIN_WAITING_MILLISECONDS)
                 _maxWaitingMilliseconds = milliseconds;
+
+            _maxWaitingMilliseconds *= 0.95;
+
+            //_maxWaitingMilliseconds = 10000000;
         }
 
         public List<BSHotelAvailability> GetAvailabilities(int destinationId, int nights)

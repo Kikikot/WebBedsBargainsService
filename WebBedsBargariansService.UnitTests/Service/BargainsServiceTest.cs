@@ -4,6 +4,7 @@ using Externals.WebApiSystem;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Unity;
 using WebBedsBargainsService.Dto;
@@ -64,8 +65,16 @@ namespace WebBedsBargariansService.UnitTests.Service
             return 0;
         }
 
+        private static int testingNights = 1;
+        private static bool repeat = true;
+
         private void RunTest(List<BSAvailabilityDto> webApiResponseList, int resultLength, bool forceTimeOut = false)
         {
+            if (!repeat)
+                testingNights++;
+
+            repeat = !repeat;
+
             var container = Initiator.Init();
             var webApi = (EmulatedWebApi)container.Resolve<IWebApi>();
             webApi.SetForceTimeOut(forceTimeOut);
@@ -75,15 +84,20 @@ namespace WebBedsBargariansService.UnitTests.Service
             List<BSHotelAvailability> availabities = null;
             bool throwsException = false;
 
+            var watch = new Stopwatch();
             try
             {
-                availabities = service.GetAvailabilities(123, 3);
+                watch.Start();
+                availabities = service.GetAvailabilities(123, testingNights);
+                watch.Stop();
             }
             catch (Exception)
             {
+                watch.Stop();
                 throwsException = true;
             }
 
+            Assert.IsTrue(watch.ElapsedMilliseconds < 1000);
             Assert.IsFalse(throwsException);
             Assert.IsNotNull(availabities);
             Assert.IsTrue(availabities.Count() == resultLength);
