@@ -65,15 +65,11 @@ namespace WebBedsBargariansService.UnitTests.Service
             return 0;
         }
 
-        private static int testingNights = 1;
-        private static bool repeat = true;
+        private static int testingNights = 0;
 
         private void RunTest(List<BSAvailabilityDto> webApiResponseList, int resultLength, bool forceTimeOut = false)
         {
-            if (!repeat)
-                testingNights++;
-
-            repeat = !repeat;
+            testingNights++;
 
             var container = Initiator.Init();
             var webApi = (EmulatedWebApi)container.Resolve<IWebApi>();
